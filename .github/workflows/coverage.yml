@@ -1,0 +1,45 @@
+name: C++ Unit Tests & Coverage
+
+on:
+   push:
+     branches: [ main ]
+   pull_request:
+     branches: [ main ]
+
+jobs:
+   coverage:
+     runs-on: ubuntu-latest
+
+     steps:
+     - name: Checkout repository
+       uses: actions/checkout@v4
+
+     - name: Install dependencies
+       run: |
+         sudo apt-get update
+         sudo apt-get install -y cmake clang llvm
+
+     - name: Configure (coverage enabled)
+       run: |
+         cmake -S . -B build \
+           -DCMAKE_BUILD_TYPE=Debug \
+           -DCMAKE_CXX_COMPILER=clang++ \
+           -DCMAKE_CXX_FLAGS="-O0 -g -fprofile-instr-generate -fcoverage-mapping" \
+           -DCMAKE_EXE_LINKER_FLAGS="-fprofile-instr-generate"
+
+     - name: Build
+       run: |
+         cmake --build build
+
+     - name: Run tests
+       run: |
+         LLVM_PROFILE_FILE="build/default.profraw" \
+         ctest --test-dir build --output-on-failure
+
+     - name: Generate coverage report
+       run: |
+         llvm-profdata merge -sparse build/default.profraw -o build/coverage.profdata
+         llvm-cov report \
+           build/test_bank \
+           -instr-profile=build/coverage.profdata \
+           src/bank_account.cpp

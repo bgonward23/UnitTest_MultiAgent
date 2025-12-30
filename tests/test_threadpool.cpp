@@ -1,4 +1,4 @@
-#include "simple_thread_pool.h"
+#include "SimpleThreadPool.h"
 #include <gtest/gtest.h>
 
 #include <atomic>

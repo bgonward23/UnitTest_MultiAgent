@@ -26,6 +26,18 @@ enable_testing()
 add_executable(test_bank
      tests/test_bank_account.cpp
 )
+# ... (Keep your existing BankAccount config) ...
+
+# 1. Add LRUCache Test
+add_executable(test_lru tests/test_lru.cpp)
+target_link_libraries(test_lru gtest_main gtest --coverage)
+add_test(NAME LRUCacheTest COMMAND test_lru)
+
+# 2. Add ThreadPool Test
+add_executable(test_threadpool tests/test_threadpool.cpp)
+# Note: "pthread" is required for threading support
+target_link_libraries(test_threadpool gtest_main gtest --coverage pthread)
+add_test(NAME ThreadPoolTest COMMAND test_threadpool)
 
 target_link_libraries(test_bank
      bank_account

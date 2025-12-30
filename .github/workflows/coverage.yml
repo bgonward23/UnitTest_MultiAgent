@@ -35,14 +35,23 @@ jobs:
 
     - name: Run tests
       run: |
-        LLVM_PROFILE_FILE="build/%m.profraw" \
+        # Set profile file pattern so tests write distinct raw data
+        export LLVM_PROFILE_FILE="build/code-%m.profraw"
         ctest --test-dir build --output-on-failure
 
     - name: Generate coverage report
       run: |
+        # 1. Merge all raw profile data into one index
         llvm-profdata merge -sparse build/*.profraw -o build/coverage.profdata
+
+        # 2. Generate Report
+        # Important: We must list EVERY test executable using -object
+        # We allow looking at 'src/' or 'include/' to find header code
         llvm-cov report \
           build/test_bank \
+          -object build/test_lru \
+          -object build/test_threadpool \
           -instr-profile=build/coverage.profdata \
-          src/bank_account.cpp
+          -ignore-filename-regex="test_.*" \
+          -ignore-filename-regex="googletest/*"
 

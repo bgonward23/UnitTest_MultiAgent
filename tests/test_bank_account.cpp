@@ -1,84 +1,64 @@
-#include <gtest/gtest.h>
 #include "bank_account.h"
-#include <stdexcept>
+#include <gtest/gtest.h>
 
-// Unit Test Fixture
-class BankAccountTest : public ::testing::Test {
-protected:
-     BankAccount account1{"John Doe", 100.0};
-     BankAccount account2{"Jane Doe", 50.0};
-};
-
-// Test BankAccount constructor
-TEST_F(BankAccountTest, ConstructorInitializesCorrectly) {
-     EXPECT_EQ(account1.get_balance(), 100.0);
-     EXPECT_EQ(account2.get_balance(), 50.0);
+TEST(BankAccountTest, ConstructorInitialBalance) {
+    BankAccount acc("Alice", 100.0);
+    EXPECT_DOUBLE_EQ(acc.get_balance(), 100.0);
 }
 
-// Test deposit method with valid input
-TEST_F(BankAccountTest, DepositValidAmount) {
-     account1.deposit(50.0);
-     EXPECT_EQ(account1.get_balance(), 150.0);
+TEST(BankAccountTest, DepositPositiveIncreasesBalance) {
+    BankAccount acc("Bob", 50.0);
+    acc.deposit(25.5);
+    EXPECT_DOUBLE_EQ(acc.get_balance(), 75.5);
 }
 
-// Test deposit method with zero amount (edge case)
-TEST_F(BankAccountTest, DepositZeroThrowsException) {
-     EXPECT_THROW(account1.deposit(0.0), std::invalid_argument);
+TEST(BankAccountTest, DepositZeroOrNegativeThrows) {
+    BankAccount acc("Carol", 10.0);
+    EXPECT_THROW(acc.deposit(0.0), std::invalid_argument);
+    EXPECT_THROW(acc.deposit(-5.0), std::invalid_argument);
 }
 
-// Test deposit method with negative amount (edge case)
-TEST_F(BankAccountTest, DepositNegativeThrowsException) {
-     EXPECT_THROW(account1.deposit(-10.0), std::invalid_argument);
+TEST(BankAccountTest, WithdrawPositiveDecreasesBalance) {
+    BankAccount acc("Dave", 80.0);
+    acc.withdraw(30.0);
+    EXPECT_DOUBLE_EQ(acc.get_balance(), 50.0);
 }
 
-// Test withdraw method with valid input
-TEST_F(BankAccountTest, WithdrawValidAmount) {
-     account1.withdraw(50.0);
-     EXPECT_EQ(account1.get_balance(), 50.0);
+TEST(BankAccountTest, WithdrawZeroOrNegativeThrows) {
+    BankAccount acc("Eve", 40.0);
+    EXPECT_THROW(acc.withdraw(0.0), std::invalid_argument);
+    EXPECT_THROW(acc.withdraw(-1.0), std::invalid_argument);
 }
 
-// Test withdraw method with zero amount (edge case)
-TEST_F(BankAccountTest, WithdrawZeroThrowsException) {
-     EXPECT_THROW(account1.withdraw(0.0), std::invalid_argument);
+TEST(BankAccountTest, WithdrawInsufficientFundsThrowsAndBalanceUnchanged) {
+    BankAccount acc("Frank", 20.0);
+    EXPECT_THROW(acc.withdraw(25.0), std::runtime_error);
+    EXPECT_DOUBLE_EQ(acc.get_balance(), 20.0);
 }
 
-// Test withdraw method with negative amount (edge case)
-TEST_F(BankAccountTest, WithdrawNegativeThrowsException) {
-     EXPECT_THROW(account1.withdraw(-10.0), std::invalid_argument);
+TEST(BankAccountTest, TransferMovesFundsBetweenAccounts) {
+    BankAccount a("Gina", 100.0);
+    BankAccount b("Hank", 30.0);
+    a.transfer(40.0, b);
+    EXPECT_DOUBLE_EQ(a.get_balance(), 60.0);
+    EXPECT_DOUBLE_EQ(b.get_balance(), 70.0);
 }
 
-// Test withdraw method with amount greater than balance
-TEST_F(BankAccountTest, WithdrawExceedsBalanceThrowsException) {
-     EXPECT_THROW(account1.withdraw(200.0), std::runtime_error);
+TEST(BankAccountTest, TransferInsufficientFundsThrowsAndBalancesUnchanged) {
+    BankAccount a("Ivy", 15.0);
+    BankAccount b("Jack", 5.0);
+    EXPECT_THROW(a.transfer(20.0, b), std::runtime_error);
+    EXPECT_DOUBLE_EQ(a.get_balance(), 15.0);
+    EXPECT_DOUBLE_EQ(b.get_balance(), 5.0);
 }
 
-// Test transfer method with valid input
-TEST_F(BankAccountTest, TransferValidAmount) {
-     account1.transfer(50.0, account2);
-     EXPECT_EQ(account1.get_balance(), 50.0);
-     EXPECT_EQ(account2.get_balance(), 100.0);
+TEST(BankAccountTest, TransferToSelfThrowsAndBalanceUnchanged) {
+    BankAccount a("Kurt", 60.0);
+    EXPECT_THROW(a.transfer(10.0, a), std::invalid_argument);
+    EXPECT_DOUBLE_EQ(a.get_balance(), 60.0);
 }
 
-// Test transfer method with amount exceeding balance
-TEST_F(BankAccountTest, TransferExceedsBalanceThrowsException) {
-     EXPECT_THROW(account1.transfer(200.0, account2),
-std::runtime_error);
-}
-
-// Test transfer method to the same account (edge case)
-TEST_F(BankAccountTest, SelfTransferThrowsException) {
-     EXPECT_THROW(account1.transfer(50.0, account1),
-std::invalid_argument);
-}
-
-// Test transfer method with zero amount (edge case)
-TEST_F(BankAccountTest, TransferZeroThrowsException) {
-     EXPECT_THROW(account1.transfer(0.0, account2),
-std::invalid_argument);
-}
-
-// Test transfer method with negative amount (edge case)
-TEST_F(BankAccountTest, TransferNegativeThrowsException) {
-     EXPECT_THROW(account1.transfer(-10.0, account2),
-std::invalid_argument);
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

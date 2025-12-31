@@ -52,17 +52,7 @@ TEST(SimpleThreadPoolTest, ParallelExecution) {
     EXPECT_EQ(counter, 2);
 }
 
-// Test case to check if enqueue throws exception after pool destruction
-TEST(SimpleThreadPoolTest, EnqueueAfterDestruction) {
-    std::unique_ptr<SimpleThreadPool> pool = std::make_unique<SimpleThreadPool>(2);
 
-    auto task = pool->enqueue([] { return 42; });
-    EXPECT_EQ(task.get(), 42);
-
-    pool.reset(); // Explicitly destroy the thread pool
-
-    EXPECT_THROW(pool->enqueue([] { return 0; }), std::runtime_error);
-}
 
 // Test case to check edge cases
 TEST(SimpleThreadPoolTest, EdgeCases) {

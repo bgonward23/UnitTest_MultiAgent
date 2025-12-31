@@ -10,7 +10,7 @@
 #include <memory>
 
 // Include the header under test
-#include "simple_thread_pool.h"
+#include "SimpleThreadPool.h"
 
 class SimpleThreadPoolTest : public ::testing::Test {
 protected:

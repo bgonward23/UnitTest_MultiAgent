@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "LRUCache.h"
+#include <climits>
 
 // Test fixture for LRUCache
 class LRUCacheTest : public ::testing::Test {

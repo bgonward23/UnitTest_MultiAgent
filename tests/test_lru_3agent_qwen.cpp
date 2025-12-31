@@ -1,16 +1,15 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
 #include "LRUCache.h"
+#include <climits>
 
 // Test fixture for LRUCache
 class LRUCacheTest : public ::testing::Test {
 protected:
-    void SetUp() override {
-        // Default capacity for tests
-        cache = LRUCache(3);
-    }
+    // FIX: Initialize 'cache' with a capacity of 2 in the initializer list
+    LRUCacheTest() : cache(2) {} 
 
-    LRUCache cache;
+    LRUCache cache; 
 };
 
 // Test case: Construct with valid capacity

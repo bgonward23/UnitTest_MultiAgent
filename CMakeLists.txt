@@ -45,9 +45,9 @@ gtest_discover_tests(test_threadpool)
 
 # --- A. Bank Account (3-Agent) ---
 # Assumes file is named: tests/test_bank_account_3agent_gpt4o.cpp
-add_executable(test_bank_account_3agent tests/test_bank_account_3agent_gpt4o.cpp)
-target_link_libraries(test_bank_account_3agent PRIVATE bank_account gtest_main)
-gtest_discover_tests(test_bank_account_3agent)
+add_executable(test_bank_3agent tests/test_bank_account_3agent_gpt4o.cpp)
+target_link_libraries(test_bank_3agent PRIVATE bank_account gtest_main)
+gtest_discover_tests(test_bank_3agent)
 
 # --- B. LRU Cache (3-Agent) ---
 # Assumes file is named: tests/test_lru_3agent_gpt4o.cpp
@@ -62,3 +62,24 @@ add_executable(test_threadpool_3agent tests/test_threadpool_3agent_gpt4o.cpp)
 target_include_directories(test_threadpool_3agent PRIVATE src)
 target_link_libraries(test_threadpool_3agent PRIVATE gtest_main gtest pthread)
 gtest_discover_tests(test_threadpool_3agent)
+
+# ==========================================
+# 6. Qwen Agent Test Versions
+# ==========================================
+
+# --- A. Bank Account (Qwen) ---
+add_executable(test_bank_qwen tests/test_bank_account_3agent_qwen.cpp)
+target_link_libraries(test_bank_qwen PRIVATE bank_account gtest_main)
+gtest_discover_tests(test_bank_qwen)
+
+# --- B. LRU Cache (Qwen) ---
+add_executable(test_lru_qwen tests/test_lru_3agent_qwen.cpp)
+target_include_directories(test_lru_qwen PRIVATE src)
+target_link_libraries(test_lru_qwen PRIVATE gtest_main gtest)
+gtest_discover_tests(test_lru_qwen)
+
+# --- C. ThreadPool (Qwen) ---
+add_executable(test_threadpool_qwen tests/test_threadpool_3agent_qwen.cpp)
+target_include_directories(test_threadpool_qwen PRIVATE src)
+target_link_libraries(test_threadpool_qwen PRIVATE gtest_main gtest pthread)
+gtest_discover_tests(test_threadpool_qwen)

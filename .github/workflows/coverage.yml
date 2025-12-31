@@ -43,11 +43,17 @@ jobs:
 
     - name: Generate Coverage Report
       run: |
-        # Run gcovr
-        # -r .          : Root directory is current dir
-        # -f src/       : Only show coverage for files in 'src/' folder
-        # --gcov-executable : Explicitly use gcov-12 to match compiler
+        # 1. Print Text Summary (Keep this for the logs)
+        gcovr -r . -f src/ --gcov-executable gcov-12 --print-summary
+
+        # 2. Generate Detailed HTML Report (For your Thesis)
         gcovr -r . \
               -f src/ \
               --gcov-executable gcov-12 \
-              --print-summary
+              --html-details build/coverage_details.html
+
+    - name: Upload Coverage Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-html-report
+        path: build/coverage_details.*

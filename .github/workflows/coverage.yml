@@ -15,22 +15,22 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install GCC and LCOV
+    - name: Install GCC-12 and LCOV
       run: |
         sudo apt-get update
-        # Install GCC (standard C++ compiler) and LCOV (coverage tool)
-        sudo apt-get install -y gcc g++ lcov cmake
+        # Explicitly install GCC-12
+        sudo apt-get install -y gcc-12 g++-12 lcov cmake
 
-    - name: Configure CMake (Switch to GCC)
+    - name: Configure CMake (Use GCC-12)
       run: |
-        # We explicitly set C and CXX compilers to GCC/G++
-        # We add '--coverage' which tells GCC to generate .gcno notes
+        # 1. Force use of GCC-12
+        # 2. Add -fno-inline to ensure header-only functions (LRUCache) are counted
         cmake -S . -B build \
           -DCMAKE_BUILD_TYPE=Debug \
-          -DCMAKE_C_COMPILER=gcc \
-          -DCMAKE_CXX_COMPILER=g++ \
-          -DCMAKE_CXX_FLAGS="--coverage" \
-          -DCMAKE_C_FLAGS="--coverage" \
+          -DCMAKE_C_COMPILER=gcc-12 \
+          -DCMAKE_CXX_COMPILER=g++-12 \
+          -DCMAKE_CXX_FLAGS="--coverage -fno-inline -fno-inline-small-functions -fno-default-inline" \
+          -DCMAKE_C_FLAGS="--coverage -fno-inline -fno-inline-small-functions -fno-default-inline" \
           -DCMAKE_EXE_LINKER_FLAGS="--coverage"
 
     - name: Build
@@ -38,18 +38,15 @@ jobs:
 
     - name: Run Tests
       run: |
-        # Run tests to generate the runtime .gcda data
         ctest --test-dir build --output-on-failure
 
     - name: Generate Coverage Report
       run: |
-        # 1. Initialize LCOV (Capture data)
-        # We add '--ignore-errors mismatch' to bypass the GTest macro confusion
-        lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
+        # Capture using the gcov-12 tool to match the compiler
+        lcov --capture --directory build --output-file coverage.info --gcov-tool gcov-12 --ignore-errors mismatch
 
-        # 2. Filter out System Files & Test Files
-        # We remove /usr/* (system headers) and tests/* (we only want source coverage)
+        # Remove system headers
         lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/tests/*' --output-file coverage.info --ignore-errors mismatch
 
-        # 3. List the Coverage
+        # List results
         lcov --list coverage.info --ignore-errors mismatch

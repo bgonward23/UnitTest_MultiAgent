@@ -21,84 +21,37 @@ jobs:
         sudo apt-get install -y gcc-12 g++-12 cmake
         pip install gcovr
 
-    # ========================================================
-    # ROUND 1: COPILOT ONLY
-    # ========================================================
-    - name: 🧪 Run Round 1 (Copilot)
+    - name: Configure CMake
       run: |
-        echo "=============================================" > comparison_results.txt
-        echo "📊 THESIS COMPARISON REPORT (Isolated Builds)" >> comparison_results.txt
-        echo "=============================================" >> comparison_results.txt
-        
-        # 1. CLEAN BUILD
+        # Clean build folder to ensure no old flags remain
         rm -rf build
         
-        # 2. CONFIGURE (Copilot Switch ON)
-        cmake -S . -B build -DBUILD_COPILOT=ON -DCMAKE_CXX_COMPILER=g++-12
-        cmake --build build
-        
-        # 3. RUN TESTS
+        # Configure using GCC 12
+        cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_CXX_COMPILER=g++-12 \
+          -DCMAKE_C_COMPILER=gcc-12
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run Copilot Tests
+      run: |
+        echo "🧪 RUNNING COPILOT TESTS..."
         ./build/test_lru || true
         ./build/test_threadpool || true
         ./build/test_bank || true
-        
-        # 4. CAPTURE COVERAGE (Using gcov-12 explicit)
-        echo "--- COPILOT SCORES ---" >> comparison_results.txt
-        echo "📋 LINE COVERAGE:" >> comparison_results.txt
-        gcovr -r . -f src/ --gcov-executable gcov-12 --print-summary >> comparison_results.txt
-        echo -e "\n🌿 BRANCH COVERAGE:" >> comparison_results.txt
-        gcovr -r . -f src/ --gcov-executable gcov-12 --branches >> comparison_results.txt
 
-    # ========================================================
-    # ROUND 2: GPT-4o ONLY
-    # ========================================================
-    - name: 🧪 Run Round 2 (GPT-4o)
+    - name: Generate Coverage Report
       run: |
-        # 1. CLEAN BUILD
-        rm -rf build 
+        echo "============================================="
+        echo "📊 COPILOT COVERAGE REPORT"
+        echo "============================================="
         
-        # 2. CONFIGURE (GPT4o Switch ON)
-        cmake -S . -B build -DBUILD_GPT4O=ON -DCMAKE_CXX_COMPILER=g++-12
-        cmake --build build
+        # Line Coverage
+        echo "📋 LINE COVERAGE:"
+        gcovr -r . -f src/ --gcov-executable gcov-12 --print-summary
         
-        # 3. RUN TESTS
-        ./build/test_lru_3agent || true
-        ./build/test_threadpool_3agent || true
-        ./build/test_bank_3agent || true
-        
-        # 4. CAPTURE COVERAGE
-        echo -e "\n--- GPT-4o SCORES ---" >> comparison_results.txt
-        echo "📋 LINE COVERAGE:" >> comparison_results.txt
-        gcovr -r . -f src/ --gcov-executable gcov-12 --print-summary >> comparison_results.txt
-        echo -e "\n🌿 BRANCH COVERAGE:" >> comparison_results.txt
-        gcovr -r . -f src/ --gcov-executable gcov-12 --branches >> comparison_results.txt
-
-    # ========================================================
-    # ROUND 3: QWEN ONLY
-    # ========================================================
-    - name: 🧪 Run Round 3 (Qwen)
-      run: |
-        # 1. CLEAN BUILD
-        rm -rf build
-        
-        # 2. CONFIGURE (Qwen Switch ON)
-        cmake -S . -B build -DBUILD_QWEN=ON -DCMAKE_CXX_COMPILER=g++-12
-        cmake --build build
-        
-        # 3. RUN TESTS
-        ./build/test_lru_qwen || true
-        ./build/test_threadpool_qwen || true
-        ./build/test_bank_qwen || true
-        
-        # 4. CAPTURE COVERAGE
-        echo -e "\n--- QWEN SCORES ---" >> comparison_results.txt
-        echo "📋 LINE COVERAGE:" >> comparison_results.txt
-        gcovr -r . -f src/ --gcov-executable gcov-12 --print-summary >> comparison_results.txt
-        echo -e "\n🌿 BRANCH COVERAGE:" >> comparison_results.txt
-        gcovr -r . -f src/ --gcov-executable gcov-12 --branches >> comparison_results.txt
-        
-        # 5. PRINT FINAL REPORT
-        echo "#############################################"
-        echo "      🏆 FINAL THESIS COMPARISON REPORT      "
-        echo "#############################################"
-        cat comparison_results.txt
+        # Branch Coverage
+        echo -e "\n🌿 BRANCH COVERAGE:"
+        gcovr -r . -f src/ --gcov-executable gcov-12 --branches

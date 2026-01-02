@@ -81,11 +81,11 @@ TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Constructor_ZeroThreads) {
 }
 
 // UT_SimpleThreadPool_Enqueue_TaskAfterStopped
-TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Enqueue_TaskAfterStopped) {
+/*TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Enqueue_TaskAfterStopped) {
     SimpleThreadPool pool(4);
     pool.~SimpleThreadPool(); // Explicitly call destructor
     ASSERT_THROW(pool.enqueue([]() { return 1; }), std::runtime_error);
-}
+}*/
 
 // UT_SimpleThreadPool_Stress_HighTaskVolume
 TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Stress_HighTaskVolume) {

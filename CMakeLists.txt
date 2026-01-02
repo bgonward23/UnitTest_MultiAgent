@@ -8,8 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ==========================================
 # 1. ENABLE COVERAGE (The Clean Way)
 # ==========================================
-# We only add basic coverage flags. 
-# WE DO NOT add -fno-inline, which causes the 336-line explosion.
+# Keeps standard flags to avoid the 336-line explosion
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage -O0 -g")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
@@ -21,8 +20,14 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+  # FIX: Suppresses the CMake Warning (dev) CMP0135
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(googletest)
+
+# FIX: CRITICAL MISSING LINES
+enable_testing()       # Enables CTest
+include(GoogleTest)    # Loads gtest_discover_tests command
 
 # ==========================================
 # 3. SOURCE FILES

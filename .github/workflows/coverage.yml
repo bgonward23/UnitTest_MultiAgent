@@ -21,13 +21,15 @@ jobs:
         sudo apt-get install -y gcc-12 g++-12 cmake
         pip install gcovr
 
-    - name: Configure CMake (Standard Mode - 87 Lines)
+    - name: Configure CMake (FORCE RESET)
       run: |
-        # 1. FORCE CLEAN: Delete previous build to reset flags (Crucial!)
-        rm -rf build  
+        # ---------------------------------------------------------
+        # CRITICAL FIX: Delete the old build folder to clear the cache.
+        # This ensures the '336 lines' flags are gone for good.
+        # ---------------------------------------------------------
+        rm -rf build
 
-        # 2. Configure without strict inlining flags
-        # This groups template instantiations, showing ~87 lines instead of 336
+        # Now configure with standard flags (Resulting in ~87 lines for ThreadPool)
         cmake -S . -B build \
           -DCMAKE_BUILD_TYPE=Debug \
           -DCMAKE_C_COMPILER=gcc-12 \

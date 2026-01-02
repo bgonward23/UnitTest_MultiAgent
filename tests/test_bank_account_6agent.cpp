@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
-#include "BankAccount.h" // Assuming the implementation is in this header file
+#include "bank_account.h" // Assuming the implementation is in this header file
 
 // Test fixture for BankAccount tests
 class BankAccountTest : public ::testing::Test {

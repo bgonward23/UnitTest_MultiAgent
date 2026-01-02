@@ -23,10 +23,10 @@ jobs:
 
     - name: Configure CMake
       run: |
-        # Force Clean
+        # Force Clean to remove any old build artifacts
         rm -rf build
         
-        # Configure for Qwen
+        # Configure for 6-Agent Swarm
         cmake -S . -B build \
           -DCMAKE_BUILD_TYPE=Debug \
           -DCMAKE_CXX_COMPILER=g++-12 \
@@ -35,17 +35,17 @@ jobs:
     - name: Build
       run: cmake --build build
 
-    - name: Run Qwen Tests
+    - name: Run 6-Agent Tests
       run: |
-        echo "🧪 RUNNING QWEN TESTS..."
-        ./build/test_lru_qwen || true
-        ./build/test_threadpool_qwen || true
-        ./build/test_bank_qwen || true
+        echo "🧪 RUNNING 6-AGENT SWARM TESTS..."
+        ./build/test_lru_6agent || true
+        ./build/test_threadpool_6agent || true
+        ./build/test_bank_6agent || true
 
     - name: Generate Coverage Report
       run: |
         echo "============================================="
-        echo "📊 QWEN COVERAGE REPORT"
+        echo "📊 6-AGENT SWARM COVERAGE REPORT"
         echo "============================================="
         
         # Line Coverage

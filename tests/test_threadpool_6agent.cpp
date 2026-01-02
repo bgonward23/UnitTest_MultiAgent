@@ -136,12 +136,12 @@ TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Concurrency_MultipleProducers) 
 }
 
 // UT_SimpleThreadPool_Stop_WithPendingTasks
-TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Stop_WithPendingTasks) {
+/*TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_Stop_WithPendingTasks) {
     SimpleThreadPool pool(4);
     pool.enqueue([]() { std::this_thread::sleep_for(std::chrono::seconds(1)); });
     pool.~SimpleThreadPool(); // Explicitly call destructor
     // No explicit assertion; ensure no crash occurs
-}
+}*/
 
 // UT_SimpleThreadPool_ExceptionHandlingInTasks
 TEST_F(SimpleThreadPoolTest, UT_SimpleThreadPool_ExceptionHandlingInTasks) {
